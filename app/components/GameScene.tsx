@@ -23,6 +23,10 @@ function PlayerShip() {
   const isPlaying = useGameStore((state) => state.isPlaying)
   const isBotMode = useGameStore((state) => state.isBotMode)
   
+  // Responsive ship scale: Smaller on mobile screens
+  const isMobile = viewport.width < 6.0
+  const baseScale = isMobile ? 0.35 : 0.5
+  
   useFrame((state, delta) => {
     if (!shipRef.current) return
     
@@ -120,7 +124,7 @@ function PlayerShip() {
     <group ref={shipRef}>
       <Trail width={2} length={6} color={WORLD_COLOR_1} attenuation={(t) => t * t}>
         <Float speed={5} rotationIntensity={0.5} floatIntensity={0.5}>
-          <mesh rotation={[0, Math.PI, 0]} scale={[0.5, 0.5, 1.5]}>
+          <mesh rotation={[0, Math.PI, 0]} scale={[baseScale, baseScale, baseScale * 3]}>
             <coneGeometry args={[1, 2, 4]} />
             <meshStandardMaterial 
               color="white" 
