@@ -315,7 +315,7 @@ function BackgroundEffects() {
       <fog attach="fog" args={['#050510', 10, 120]} /> 
       <ambientLight intensity={0.5} />
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-      <EffectComposer disableNormalPass>
+      <EffectComposer enableNormalPass={false}>
         <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} radius={0.6} />
         <ChromaticAberration offset={new Vector2(0.002, 0.002)} />
         <Vignette eskil={false} offset={0.1} darkness={1.1} />
