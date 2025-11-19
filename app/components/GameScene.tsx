@@ -2,7 +2,7 @@
 
 import React, { useRef, useMemo, useState, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Text, PerspectiveCamera, Environment, Stars, Trail, Float } from '@react-three/drei'
+import { Text, PerspectiveCamera, Environment, Stars, Trail, Float, PerformanceMonitor } from '@react-three/drei'
 import { EffectComposer, Bloom, ChromaticAberration, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { useGameStore } from '../store/useGameStore'
@@ -312,33 +312,61 @@ function ObstacleManager() {
   )
 }
 
-function BackgroundEffects() {
+function SceneContent() {
+  const [dpr, setDpr] = useState(1.5) // Default cap for mobile
+  const [enabled, setEnabled] = useState(true) // Post-processing state
+
   return (
     <>
+      <PerformanceMonitor 
+        onDecline={() => {
+          // Downgrade quality on lag
+          setDpr(1)
+          setEnabled(false) 
+        }}
+        onIncline={() => {
+          // Restore quality if stable
+          setDpr(1.5)
+          setEnabled(true)
+        }}
+      />
+      
+      <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+      
+      {/* Apply dynamic DPR to the parent Canvas via internal effect/hook would be complex, 
+          so we rely on PostProcessing scaling or just accept internal resolution scaling 
+          if passed as prop, but R3F handles dpr on Canvas. 
+          
+          Instead, we control what we render: */}
+      
+      <PlayerShip />
+      <InfiniteTunnel />
+      <ObstacleManager />
+      
       <color attach="background" args={['#050510']} />
       <fog attach="fog" args={['#050510', 10, 120]} /> 
       <ambientLight intensity={0.5} />
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-      <EffectComposer enableNormalPass={false}>
-        <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} radius={0.6} />
-        <ChromaticAberration offset={new Vector2(0.002, 0.002)} />
-        <Vignette eskil={false} offset={0.1} darkness={1.1} />
-      </EffectComposer>
+      
+      {/* Only render expensive effects if enabled */}
+      {enabled && (
+        <EffectComposer enableNormalPass={false}>
+          <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} radius={0.6} />
+          <ChromaticAberration offset={new Vector2(0.002, 0.002)} />
+          <Vignette eskil={false} offset={0.1} darkness={1.1} />
+        </EffectComposer>
+      )}
     </>
   )
 }
 
 // --- MAIN COMPONENT ---
 export default function GameScene() {
+  // We set a safe max DPR on the Canvas itself to prevent initial overload
   return (
     <div className="w-full h-screen relative">
-      <Canvas dpr={[1, 2]} gl={{ antialias: false, toneMapping: THREE.ReinhardToneMapping }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
-        
-        <PlayerShip />
-        <InfiniteTunnel />
-        <ObstacleManager />
-        <BackgroundEffects />
+      <Canvas dpr={[1, 1.5]} gl={{ antialias: false, toneMapping: THREE.ReinhardToneMapping, powerPreference: "high-performance" }}>
+        <SceneContent />
       </Canvas>
     </div>
   )
