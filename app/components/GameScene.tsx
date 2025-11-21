@@ -314,30 +314,15 @@ function ObstacleManager() {
 
 function SceneContent() {
   const [dpr, setDpr] = useState(1.5) // Default cap for mobile
-  const [enabled, setEnabled] = useState(true) // Post-processing state
 
   return (
     <>
       <PerformanceMonitor 
-        onDecline={() => {
-          // Downgrade quality on lag
-          setDpr(1)
-          setEnabled(false) 
-        }}
-        onIncline={() => {
-          // Restore quality if stable
-          setDpr(1.5)
-          setEnabled(true)
-        }}
+        onDecline={() => setDpr(1)}
+        onIncline={() => setDpr(1.5)}
       />
       
       <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
-      
-      {/* Apply dynamic DPR to the parent Canvas via internal effect/hook would be complex, 
-          so we rely on PostProcessing scaling or just accept internal resolution scaling 
-          if passed as prop, but R3F handles dpr on Canvas. 
-          
-          Instead, we control what we render: */}
       
       <PlayerShip />
       <InfiniteTunnel />
@@ -348,14 +333,11 @@ function SceneContent() {
       <ambientLight intensity={0.5} />
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
       
-      {/* Only render expensive effects if enabled */}
-      {enabled && (
-        <EffectComposer enableNormalPass={false}>
-          <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} radius={0.6} />
-          <ChromaticAberration offset={new Vector2(0.002, 0.002)} />
-          <Vignette eskil={false} offset={0.1} darkness={1.1} />
-        </EffectComposer>
-      )}
+      <EffectComposer enableNormalPass={false}>
+        <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} radius={0.6} />
+        <ChromaticAberration offset={new Vector2(0.002, 0.002)} />
+        <Vignette eskil={false} offset={0.1} darkness={1.1} />
+      </EffectComposer>
     </>
   )
 }

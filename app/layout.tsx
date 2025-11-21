@@ -5,6 +5,14 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Quantum Drift",
   description: "A high-speed 3D infinite runner",
+  icons: {
+    icon: [
+      { url: '/logo.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  }
 };
 
 export default function RootLayout({
