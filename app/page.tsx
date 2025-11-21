@@ -34,23 +34,12 @@ function UI() {
     { username: string; score: number }[]
   >([]);
   const [errorMsg, setErrorMsg] = useState("");
-  const [subscribers, setSubscribers] = useState<string | null>(null);
 
   // Fetch leaderboard on game over
   useEffect(() => {
     if (isGameOver) {
       setHasSubmitted(false); // Reset submission state for new game
       getLeaderboard().then((data) => setLeaderboard(data as any));
-
-      // Fetch YouTube stats
-      fetch("/api/youtube")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.subscriberCount) {
-            setSubscribers(data.subscriberCount);
-          }
-        })
-        .catch((err) => console.error("Failed to fetch subs:", err));
     }
   }, [isGameOver]);
 

@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quantum Drift
 
-## Getting Started
+Un jeu de course infini en 3D développé avec Next.js, React Three Fiber et WebGL. Pilotez à travers un tunnel néon généré de manière procédurale et évitez les obstacles pour obtenir le meilleur score.
 
-First, run the development server:
+![Quantum Drift Screenshot](/public/screenshot.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🎮 Fonctionnalités
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Gameplay Infini** : Un tunnel généré procéduralement qui accélère avec le temps.
+- **Graphismes WebGL** : Effets de post-traitement (Bloom, Aberration Chromatique) pour une esthétique Cyberpunk.
+- **Classement Global** : Système de score en ligne via Supabase.
+- **Mode Bot** : Une IA autonome capable de jouer à votre place.
+- **Responsive** : Jouable sur Desktop et Mobile (contrôles tactiles).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Stack Technique
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework** : [Next.js 15](https://nextjs.org/) (App Router)
+- **3D Engine** : [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) (Three.js)
+- **Post-Processing** : `@react-three/postprocessing`
+- **Styling** : Tailwind CSS
+- **Database** : Supabase (pour le leaderboard)
+- **Deployment** : Vercel
 
-## Learn More
+## 🚀 Installation
 
-To learn more about Next.js, take a look at the following resources:
+1. **Cloner le projet**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   git clone https://github.com/votre-pseudo/quantum-drift.git
+   cd quantum-drift
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Installer les dépendances**
 
-## Deploy on Vercel
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Configuration**
+   Créez un fichier `.env.local` à la racine avec vos clés Supabase (optionnel pour le leaderboard) :
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=votre_url_supabase
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anon
+   ```
+
+4. **Lancer le serveur de développement**
+   ```bash
+   npm run dev
+   ```
+   Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
+
+## 🤝 Contribution
+
+Ce projet est **Open Source** ! N'hésitez pas à proposer des Pull Requests pour améliorer le jeu, ajouter de nouveaux obstacles, ou optimiser les performances.
+
+### Idées d'améliorations
+
+- Nouveaux types d'obstacles
+- Power-ups (bouclier, ralentissement)
+- Musique et effets sonores
+- Skins de vaisseaux
+
+## 👤 Auteur
+
+**Jean-Solopreneur**
+
+- [YouTube](https://www.youtube.com/@Jean-Solopreneur)
+- [ProblemSifter](https://www.problemsifter.com/)
+
+---
+
+_Fait avec ❤️ et beaucoup de café._
