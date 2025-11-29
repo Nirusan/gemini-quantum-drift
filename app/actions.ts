@@ -2,27 +2,37 @@
 
 import { createClient } from '@supabase/supabase-js'
 
-// Initialize server-side client (can use Service Role key if needed for admin tasks, but Anon is fine for this)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 export async function submitScore(pseudo: string, score: number) {
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return { success: false, error: "Base de données non configurée" }
+  // We NEED the Service Role Key to bypass RLS for insertion from the server
+  // If we used the Anon key here, we would be subject to the same restrictions as the public client
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error("Missing Supabase Service Role Key")
+    return { success: false, error: "Configuration serveur manquante" }
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  // Create an ADMIN client with the Service Role Key
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
-  // Basic validation
+  // Validation
   if (!pseudo || pseudo.length > 15) {
     return { success: false, error: "Pseudo invalide (max 15 chars)" }
   }
+  
+  // Cap max score reasonably to prevent billion-point hacks if someone calls the server action directly
+  // Assuming logical max score ~100000 based on gameplay speed
+  if (score < 0 || score > 999999) { 
+     return { success: false, error: "Score invalide" }
+  }
 
   try {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('scores')
       .insert([
-        { username: pseudo, score: Math.floor(score) } // Ensure integer
+        { username: pseudo, score: Math.floor(score) }
       ])
 
     if (error) throw error
@@ -38,6 +48,7 @@ export async function getLeaderboard() {
     return []
   }
 
+  // For reading, the Anon key is fine (public read access)
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
   try {
@@ -54,4 +65,3 @@ export async function getLeaderboard() {
     return []
   }
 }
-

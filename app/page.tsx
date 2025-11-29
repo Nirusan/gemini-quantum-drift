@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useGameStore } from "./store/useGameStore";
 import { useEffect, useState } from "react";
 import { submitScore, getLeaderboard } from "./actions";
@@ -209,11 +210,12 @@ function UI() {
             >
               {/* Profile Picture */}
               <div className="relative shrink-0">
-                <div className="w-14 h-14 rounded-full overflow-hidden border border-white/10 group-hover:border-red-600 transition-colors duration-300 shadow-xl">
-                  <img
+                <div className="w-14 h-14 rounded-full overflow-hidden border border-white/10 group-hover:border-red-600 transition-colors duration-300 shadow-xl relative">
+                  <Image
                     src="/pdp YT 6.png"
                     alt="Jean-Solopreneur"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               </div>
