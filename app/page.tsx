@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useGameStore } from "./store/useGameStore";
 import { useEffect, useState } from "react";
-import { submitScore, getLeaderboard } from "./actions";
+import { submitScore, getLeaderboard, startGameSession } from "./actions";
 
 // Dynamic import to avoid SSR issues with WebGL
 const GameScene = dynamic(() => import("./components/GameScene"), {
@@ -26,6 +26,8 @@ function UI() {
     startGame,
     startBotGame,
     reset,
+    sessionToken,
+    setSessionToken,
   } = useGameStore();
 
   const [pseudo, setPseudo] = useState("");
@@ -44,6 +46,18 @@ function UI() {
     }
   }, [isGameOver]);
 
+  const handleStartGame = async () => {
+    // Start server session for anti-cheat
+    const token = await startGameSession();
+    if (token) setSessionToken(token);
+    startGame();
+  };
+
+  const handleStartBotGame = async () => {
+    // No anti-cheat needed for bot mode (scores ignored anyway or marked)
+    startBotGame();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pseudo.trim()) return;
@@ -51,7 +65,8 @@ function UI() {
     setIsSubmitting(true);
     setErrorMsg("");
 
-    const result = await submitScore(pseudo, score);
+    // Send session token for validation
+    const result = await submitScore(pseudo, score, sessionToken || undefined);
 
     if (result.success) {
       setHasSubmitted(true);
@@ -88,7 +103,7 @@ function UI() {
             Pilotez le Noyau
           </p>
           <button
-            onClick={startGame}
+            onClick={handleStartGame}
             className="group relative px-12 py-4 bg-transparent border border-neon-blue text-neon-blue text-xl font-bold uppercase tracking-wider hover:bg-neon-blue hover:text-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,243,255,0.6)] overflow-hidden"
           >
             <span className="relative z-10">Initialiser la Séquence</span>
@@ -166,7 +181,7 @@ function UI() {
                 </button>
 
                 <button
-                  onClick={startBotGame}
+                  onClick={handleStartBotGame}
                   className="text-sm text-neon-blue hover:text-white uppercase tracking-widest border-b border-transparent hover:border-white transition-all duration-300 opacity-70 hover:opacity-100"
                 >
                   [ Mode Bot ]
